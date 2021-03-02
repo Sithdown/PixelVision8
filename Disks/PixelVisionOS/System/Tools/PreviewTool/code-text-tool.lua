@@ -48,7 +48,7 @@ function TextTool:Init()
     
         _textTool.extension = _textTool.targetFilePath.GetExtension()
 
-        _textTool.codeMode = _textTool.extension == ".lua" or _textTool.extension == ".cs"
+        _textTool.codeMode = _textTool.extension == ".lua" or _textTool.extension == ".cs" or _textTool.extension == ".json"
        
         local pathSplit = string.split(_textTool.targetFile, "/")
         
@@ -61,11 +61,25 @@ function TextTool:Init()
     
         pixelVisionOS:ChangeTitle(_textTool.toolName, "toolbaricontool")
         
-        pixelVisionOS:ShowMessageModal(_textTool.toolName .. " Error", "The tool could not load without a reference to a file to edit.", 160, false,
-          function()
+      local buttons = 
+      {
+        {
+          name = "modalokbutton",
+          action = function(target)
             QuitCurrentTool()
-          end
-        )
+          end,
+          key = Keys.Enter,
+          tooltip = "Press 'enter' to quit the tool"
+        }
+      }
+      
+      pixelVisionOS:ShowMessageModal(_textTool.toolName .. " Error", "The tool could not load without a reference to a file to edit.", 160, buttons)
+
+        -- pixelVisionOS:ShowMessageModal(_textTool.toolName .. " Error", "The tool could not load without a reference to a file to edit.", 160, false,
+        --   function()
+        --     QuitCurrentTool()
+        --   end
+        -- )
         
     end
     

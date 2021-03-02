@@ -24,11 +24,12 @@ LoadScript("pixel-vision-ui-v2")
 LoadScript("pixel-vision-os-title-bar-v2")
 LoadScript("pixel-vision-os-message-bar-v2")
 LoadScript("pixel-vision-os-modal-v2")
-LoadScript("pixel-vision-os-message-modal-v4")
+LoadScript("pixel-vision-os-message-modal-v5")
 LoadScript("pixel-vision-os-color-utils-v2")
 LoadScript("pixel-vision-os-undo-v2")
 LoadScript("pixel-vision-os-clipboard-v2")
 LoadScript("pixel-vision-os-export-game-v1")
+LoadScript("pixel-vision-os-input-v1")
 LoadScript("pixel-vision-os-version")
 
 function PixelVisionOS:Init()
@@ -105,45 +106,32 @@ function PixelVisionOS:Draw()
     self:DrawMessageBar(self.messageBar)
 
 
-    -- Draw the editor UI
-    self.editorUI:Draw()
-
+    
     -- Draw modals on top
     self:DrawModal()
 
     --if(self.displayFPS == true) then
 
-        local fps = ReadFPS()
+    local fps = ReadFPS()
 
-        local color = 7
+    local color = 7
 
-        if(fps < 30) then
-            color = 9
-        elseif(fps <= 40 and fps >= 30) then
-            color = 14
-        end
-
-        DrawText(tostring(fps), Display().x - 10, Display().y - 10, DrawMode.Sprite, "medium", color, -4)
-    --end
-
-end
-
--- This is a helper for changing the text on the title bar
-function PixelVisionOS:ChangeTitle(text, titleIconName)
-
-    DrawRect(30, 0, 140, 8, 0, DrawMode.TilemapCache)
-
-    local maxChars = 35
-    if(#text > maxChars) then
-        text = text:sub(0, maxChars - 3) .. "..."
-    else
-        text = string.rpad(text, maxChars, "")
+    if(fps < 30) then
+        color = 9
+    elseif(fps <= 40 and fps >= 30) then
+        color = 14
     end
 
-    self.titleBar.titleIcon = FindMetaSpriteId(titleIconName)-- and _G[titleIconName].spriteIDs[1] or nil
-    self.titleBar.title = text
-    self.editorUI:Invalidate(self.titleBar)
+    DrawText(tostring(fps), Display().x - 10, Display().y - 10, DrawMode.Sprite, "medium", color, -4)
+    --end
+
+    -- Draw the editor UI
+    self.editorUI:Draw()
+
+
 end
+
+
 
 function PixelVisionOS:ShowAboutModal(toolTitle, optionalText, width)
 
@@ -153,25 +141,76 @@ function PixelVisionOS:ShowAboutModal(toolTitle, optionalText, width)
 
     local message = "Copyright (c) 2018, Jesse Freeman. All rights reserved. Licensed under the Microsoft Public License (MS-PL) License.\n\n"
 
-    self:ShowMessageModal("About " .. toolTitle .. " " .. self.version, message .. optionalText, width, false)
+    self:ShowMessageModal("About " .. toolTitle .. " " .. self.version, message .. optionalText, width)
 
 end
 
-function PixelVisionOS:ShowMessageModal(title, message, width, showCancel, onCloseCallback, okButtonSpriteName)
+function PixelVisionOS:ShowMessageModal(title, message, width, buttons) --showCancel, onCloseCallback, okButtonSpriteName, cancelButtonSpriteName)
 
     -- Look to see if the modal exists
     if(self.messageModal == nil) then
 
         -- Create the model
-        self.messageModal = MessageModal:Init(title, message, width, showCancel, okButtonSpriteName )
+        self.messageModal = MessageModal:Init(title, message, width, buttons)
 
         -- Pass a reference of the editorUI to the modal
         self.messageModal.editorUI = self.editorUI
-
+    -- end
     else
-
         -- If the modal exists, configure it with the new values
-        self.messageModal:Configure(title, message, width, showCancel, okButtonSpriteName)
+        self.messageModal:Configure(title, message, width, buttons)--showCancel, okButtonSpriteName, cancelButtonSpriteName)
+    end
+
+    -- Open the modal
+    self:OpenModal(self.messageModal, onCloseCallback)
+
+end
+
+function PixelVisionOS:ShowSaveModal(title, message, width, onAccept, onDecline, onCancel) --showCancel, onCloseCallback, okButtonSpriteName, cancelButtonSpriteName)
+
+    local buttons = 
+    {
+      {
+        name = "modalyesbutton",
+        action = onAccept,
+        key = Keys.Enter,
+        tooltip = "Press 'enter' to save",
+        border = {name = "modaldefaultbuttonborder", offsetX = -4, offsetY = -4}
+      },
+      {
+        name = "modalnobutton",
+        action = onDecline,
+        key = Keys.N,
+        tooltip = "Press 'n' to not save",
+        border = {name = "modaldefaultbuttonborder", offsetX = -4, offsetY = -4}
+      }
+    }
+
+    if(onCancel ~= nil) then
+        table.insert(
+            buttons, 
+            {
+                name = "modalcancelbutton",
+                action = onCancel,
+                key = Keys.Escape,
+                tooltip = "Press 'escape' to cancel",
+                border = {name = "modaldefaultbuttonborder", offsetX = -4, offsetY = -4}
+            }
+        )
+    end
+
+    -- Look to see if the modal exists
+    if(self.messageModal == nil) then
+
+        -- Create the model
+        self.messageModal = MessageModal:Init(title, message, width, buttons)
+
+        -- Pass a reference of the editorUI to the modal
+        self.messageModal.editorUI = self.editorUI
+    -- end
+    else
+        -- If the modal exists, configure it with the new values
+        self.messageModal:Configure(title, message, width, buttons)--showCancel, okButtonSpriteName, cancelButtonSpriteName)
     end
 
     -- Open the modal
@@ -312,11 +351,11 @@ function PixelVisionOS:RegisterUI(data, updateCall, scope, ignoreModal)
   
     -- For debugging
   
-    -- print("Remove", removeItem, "total", self.uiTotal)
+    print("Remove", removeItem, "total", self.uiTotal)
   
-    -- for i = 1, #self.uiComponents do
-    --   print("Left over", self.uiComponents[i].uiData.name)
-    -- end
+    for i = 1, #self.uiComponents do
+      print("Left over", self.uiComponents[i].uiData.name)
+    end
   
   end
 
@@ -371,5 +410,17 @@ function PixelVisionOS:LoadCustomIcon(iconWorkspacePath, iconUpName, iconSelecte
     end
 
     return success
+
+end
+
+function PixelVisionOS:OpenPath(path)
+
+    print("Open Workspace Tool and go to", path)
+    local metaData = {
+        overrideLastPath = path,
+    }
+    
+    -- TODO this is not working
+    -- LoadGame("/PixelVisionOS/Tools/WorkspaceTool/", metaData)
 
 end

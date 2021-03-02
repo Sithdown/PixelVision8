@@ -9,6 +9,7 @@
             {"name":"modalokbuttonup","width":4,"spriteIDs":[20,96,97,23,40,106,107,43]},
             {"name":"modalcancelbuttonover","width":4,"spriteIDs":[116,117,118,119,126,127,128,129]},
             {"name":"modalsavebuttonup","width":4,"spriteIDs":[20,91,92,23,40,100,101,43]},
+            {"name":"modalsavebuttonover","width":4,"spriteIDs":[57,93,94,60,74,102,103,77]},
             {"name":"vsliderhandleover","width":2,"spriteIDs":[104,105,110,111,120,121]},
             {"name":"cursorhelp","width":2,"spriteIDs":[18,19,38,39]},
             {"name":"toolbariconfile","width":1,"spriteIDs":[52]},
@@ -23,9 +24,9 @@
             {"name":"emptytile","width":1,"spriteIDs":[53]},
             {"name":"cursorhanddown","width":2,"spriteIDs":[14,15,34,35]},
             {"name":"emptytileedge","width":1,"spriteIDs":[54]},
-            {"name":"vsliderhandle","width":2,"spriteIDs":[55,56,72,73,89,90]},
+            {"name":"vsliderhandleup","width":2,"spriteIDs":[55,56,72,73,89,90]},
             {"name":"cursorhand","width":2,"spriteIDs":[12,13,32,33]},
-            {"name":"hsliderhandle","width":3,"spriteIDs":[69,70,71,86,87,88]},
+            {"name":"hsliderhandleup","width":3,"spriteIDs":[69,70,71,86,87,88]},
             {"name":"modalnobuttonover","width":4,"spriteIDs":[57,61,62,60,74,78,79,77]}
         ],
         "total": 96

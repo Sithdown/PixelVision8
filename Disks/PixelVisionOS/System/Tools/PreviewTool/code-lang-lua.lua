@@ -1,5 +1,6 @@
 LoadScript("pixel-vision-os-api-list-v1")
 
+print("Lua Lang")
 --Lua syntax parser
 
 --Lua Keywords
